@@ -52,7 +52,8 @@ def classify_2(data):
             predictions.append({'Id': i, 'Category': subreddits[np.argmax(result)]})
         else:
             predictions.append({'Id': i, 'Category': subreddits[random_ints[i]]})
-            
+
+    return predictions
 
 
 def convert_to_csv(data):
