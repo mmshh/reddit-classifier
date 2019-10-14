@@ -59,8 +59,9 @@ class BayesClassifier:
         #Else return the product of P(word|c) for all word in words
         product_prob_x = 1.0
         for word in words:
-            if(self.word_probability_class[class_name][word] != 0):
-                product_prob_x *= self.word_probability_class[class_name][word]
+            product_prob_x *= self.word_probability_class[class_name][word]
+            #if(self.word_probability_class[class_name][word] != 0):
+                #product_prob_x *= self.word_probability_class[class_name][word]
         return product_prob_x
         
             
