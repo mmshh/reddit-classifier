@@ -55,5 +55,5 @@ if __name__ == "__main__":
     test_data = np.load("./resources/data_test.pkl", allow_pickle=True)
     bayes_classifier = BayesClassifier()
     bayes_classifier.train(train_data[0][:], train_data[1][:])
-    predictions = bayes_classifier.predict(test_data[0][:])
+    predictions = bayes_classifier.predict(test_data)
     bayes_classifier.convert_to_csv(predictions)
