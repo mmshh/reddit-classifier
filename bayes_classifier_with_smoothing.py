@@ -52,7 +52,9 @@ class BayesClassifier:
         word_tokens = tokenizer.tokenize(words.lower())
         #Remove stop words
         stop_words = set(stopwords.words('english'))
-        filtered_words = [w for w in word_tokens if not w in stop_words]
+        ps = nltk.PorterStemmer()
+        filtered_words = [ps.stem(w) for w in word_tokens
+                          if w not in stop_words and not w.isdigit()]
         return filtered_words
     
     def compute_probX_knowingC(self, class_name, words):      

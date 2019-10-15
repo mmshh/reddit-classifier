@@ -48,7 +48,9 @@ class BayesClassifier:
         word_tokens = tokenizer.tokenize(words.lower())
         #Remove stop words
         stop_words = set(stopwords.words('english'))
-        filtered_words = [w for w in word_tokens if not w in stop_words]
+        ps = nltk.PorterStemmer()
+        filtered_words = [ps.stem(w) for w in word_tokens
+                          if w not in stop_words and not w.isdigit()]
         return filtered_words
     
     def compute_probX_knowingC(self, class_name, words):      
@@ -60,14 +62,6 @@ class BayesClassifier:
             else:
                 product_prob_x *= 1/(self.word_count_class[class_name]+1)
         return product_prob_x
-        
-            
-    def convert_to_csv(data):
-        csv_columns = ['Id', 'Category']
-        with open('./resources/output.csv', 'w') as f:
-            writer = csv.DictWriter(f, csv_columns)
-            writer.writeheader()
-            writer.writerows(data)
             
     def score(self, predictions, result):
         count = 0
