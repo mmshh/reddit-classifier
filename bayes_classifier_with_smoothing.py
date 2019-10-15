@@ -4,6 +4,10 @@ import nltk
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 import operator
+import csv
+
+from utils import convert_to_csv, read_train_data, read_test_data
+
 
 class BayesClassifier:
     def __init__(self):
@@ -60,20 +64,12 @@ class BayesClassifier:
             else:
                 product_prob_x *= 1/(self.word_count_class[class_name]+1)
         return product_prob_x
-        
-            
-    def convert_to_csv(data):
-        csv_columns = ['Id', 'Category']
-        with open('./resources/output.csv', 'w') as f:
-            writer = csv.DictWriter(f, csv_columns)
-            writer.writeheader()
-            writer.writerows(data)
 
 
 if __name__ == "__main__":
-    train_data = np.load("./resources/data_train.pkl", allow_pickle=True)
-    test_data = np.load("./resources/data_train.pkl", allow_pickle=True)
+    train_data = read_train_data()
+    test_data = read_test_data()
     bayes_classifier = BayesClassifier()
     bayes_classifier.train(train_data[0][:], train_data[1][:])
-    predictions = bayes_classifier.predict(train_data[0][:])
-    bayes_classifier.convert_to_csv(predictions)
+    predictions = bayes_classifier.predict(test_data)
+    convert_to_csv(predictions)

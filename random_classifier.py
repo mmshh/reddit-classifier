@@ -2,18 +2,14 @@
 # coding: utf-8
 
 # In[1]:
-
+import os
 
 import numpy as np
 import csv
 
 
 # In[42]:
-
-
-def read_test_data():
-    value = np.load("./resources/data_test.pkl", allow_pickle=True)
-    return value
+from utils import convert_to_csv, read_test_data
 
 
 def classify_randomly(data):
@@ -29,6 +25,7 @@ def classify_randomly(data):
         predictions.append({'Id': idx, 'Category': subreddits[random_ints[idx]]})
 
     return predictions
+
 
 def classify_2(data):
     subreddits = ['AskReddit', 'GlobalOffensive', 'Music', 'Overwatch', 'anime',
@@ -54,14 +51,6 @@ def classify_2(data):
             predictions.append({'Id': i, 'Category': subreddits[random_ints[i]]})
 
     return predictions
-
-
-def convert_to_csv(data):
-    csv_columns = ['Id', 'Category']
-    with open('./resources/output.csv', 'w') as f:
-        writer = csv.DictWriter(f, csv_columns)
-        writer.writeheader()
-        writer.writerows(data)
 
 
 if __name__ == "__main__":
