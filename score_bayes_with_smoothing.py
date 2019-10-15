@@ -38,7 +38,7 @@ class BayesClassifier:
             words = self.tokenize_words(comments[i])
             for class_name in self.prior.keys():
                 probX_knowingC = self.compute_probX_knowingC(class_name, words)
-                class_probability[class_name] = probX_knowingC*self.prior[class_name]
+                class_probability[class_name] = probX_knowingC + np.log(self.prior[class_name])
             result.append({'Id': i, 'Category': max(class_probability.items(), key=operator.itemgetter(1))[0]})
         return result
     
@@ -55,14 +55,14 @@ class BayesClassifier:
     
     def compute_probX_knowingC(self, class_name, words):      
         #Return the product of P(word|c) for all word in words
-        product_prob_x = 1.0
+        product_prob_x = 0.
         for word in words:
-            if(self.word_probability_class[class_name][word] != 0):
-                product_prob_x *= self.word_probability_class[class_name][word]
+            if self.word_probability_class[class_name][word] != 0:
+                product_prob_x += np.log(self.word_probability_class[class_name][word])
             else:
-                product_prob_x *= 1/(self.word_count_class[class_name]+1)
+                product_prob_x += np.log(1 / (self.word_count_class[class_name] + 1))
         return product_prob_x
-            
+
     def score(self, predictions, result):
         count = 0
         for i in range(len(predictions)):
