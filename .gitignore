@@ -103,7 +103,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# ouput data
-output.csv
+# output data
+output*
 
 .idea/
