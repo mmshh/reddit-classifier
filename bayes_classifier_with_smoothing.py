@@ -1,6 +1,7 @@
 import numpy as np
 from collections import defaultdict
 import nltk
+import random
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 import operator
@@ -8,15 +9,15 @@ import csv
 
 from utils import convert_to_csv, read_train_data, read_test_data
 
-
 class BayesClassifier:
     def __init__(self):
         self.prior = defaultdict(float)
+        self.voc = []
         self.word_frequency_class = defaultdict(lambda: defaultdict(int))
-        self.word_probability_class = defaultdict(lambda: defaultdict(float))
         self.word_count_class = defaultdict(int)
 
     def train(self, comments, classes):
+        print('start training')
         classes_name, classes_count = np.unique(classes, return_counts=True)
         
         #Compute prior
@@ -29,19 +30,17 @@ class BayesClassifier:
             for w in bag:
                 self.word_frequency_class[classes[i]][w] += 1
                 self.word_count_class[classes[i]] += 1
-        
-        #Compute word probability for a given class
-        for c in self.word_frequency_class.keys():
-            for word in self.word_frequency_class[c].keys():
-                self.word_probability_class[c][word] = self.word_frequency_class[c][word] / self.word_count_class[c]
+                if(w not in self.voc):
+                    self.voc.append(w)
             
-    def predict(self, comments):
+    def predict(self, comments, alpha):
+        print('start predict')
         result = []
         for i in range(len(comments)):
             class_probability = defaultdict(float)
             words = self.tokenize_words(comments[i])
             for class_name in self.prior.keys():
-                probX_knowingC = self.compute_probX_knowingC(class_name, words)
+                probX_knowingC = self.compute_probX_knowingC(class_name, words, alpha)
                 class_probability[class_name] = probX_knowingC + np.log(self.prior[class_name])
             result.append({'Id': i, 'Category': max(class_probability.items(), key=operator.itemgetter(1))[0]})
         return result
@@ -57,21 +56,53 @@ class BayesClassifier:
                           if w not in stop_words and not w.isdigit()]
         return filtered_words
     
-    def compute_probX_knowingC(self, class_name, words):      
+    def compute_probX_knowingC(self, class_name, words, alpha):      
         #Return the product of P(word|c) for all word in words
         product_prob_x = 0.
         for word in words:
-            if self.word_probability_class[class_name][word] != 0:
-                product_prob_x += np.log(self.word_probability_class[class_name][word])
-            else:
-                product_prob_x += np.log(1 / (self.word_count_class[class_name] + 1))
+            product_prob_x += np.log(self.compute_probx_knowingC(class_name, word, alpha))
         return product_prob_x
+    
+    def compute_probx_knowingC(self, class_name, word, alpha):
+        #Compute word probability for a given class
+        return (self.word_frequency_class[class_name][word]+alpha) / (self.word_count_class[class_name]+alpha*len(self.voc))
+
+    
+    def split_data(self, data_c, data_r, train_percent):
+        data_comments = np.array(data_c)
+        data_class = np.array(data_r)
+        random_indices = np.array(random.sample(range(len(data_c)), int(len(data_c)*train_percent)))
+        return data_comments[random_indices], data_class[random_indices], data_comments[~random_indices], data_class[~random_indices]
+        
+        
+    def score(self, predictions, result):
+        count = 0
+        for i in range(len(predictions)):
+            if(predictions[i]['Category'] == result[i]):
+                count += 1
+        return count/len(predictions)
+
+    def define_alpha(self, validation_comments, validation_result):
+        alpha = [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01]
+        result = np.zeros(len(alpha))
+        for i in range(len(alpha)):
+            print('Alpha ',i+1,'/',len(alpha),' : ',alpha[i])
+            predict = bayes_classifier.predict(v_c, alpha[i])
+            result[i] = bayes_classifier.score(predict, v_r)
+            print(result[i])
+        print(result)
+        print(alpha[np.argmax(result)])
+        return alpha[np.argmax(result)]
 
 
 if __name__ == "__main__":
     train_data = read_train_data()
     test_data = read_test_data()
+    comment = train_data[0]
+    result = train_data[1]
     bayes_classifier = BayesClassifier()
-    bayes_classifier.train(train_data[0][:], train_data[1][:])
-    predictions = bayes_classifier.predict(test_data)
+    alpha_star = 0.01
+    bayes_classifier.train(comment, result)
+    predictions = bayes_classifier.predict(test_data, alpha_star)
     convert_to_csv(predictions)
+    
