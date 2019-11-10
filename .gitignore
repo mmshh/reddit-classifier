@@ -107,3 +107,4 @@ venv.bak/
 output*
 
 .idea/
+.DS_Store
