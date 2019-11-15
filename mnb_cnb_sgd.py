@@ -138,7 +138,7 @@ def write_predictions():
     pred2 = train_predict_compNB(X_train, y_train, X_test, 0.24)
     pred3 = train_predict_sgd(X_train, y_train, X_test, 0.00001)
     
-    pred = 15*pred1+10*pred2+6*pred4
+    pred = 15*pred1+10*pred2+6*pred3
     
     p  = [] 
     for i in range(len(pred)):
