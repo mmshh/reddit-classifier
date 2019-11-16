@@ -11,6 +11,7 @@ Libra
 
 ### How to run the Bayes Classifier ###
 
+Before running, please add the `data_test.pkl` and `data_train.pkl` files to the resources folder.
 The code for the models in the report is all included. To run the best classifier against the `data_test.pkl` file from Kaggle that produces the best accuracy, 
 please run the python file called `mnb_cnb_sgd.py` located in the root directory of this project:
 ```
