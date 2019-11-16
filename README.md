@@ -11,17 +11,18 @@ Libra
 
 ### How to run the Bayes Classifier ###
 
-To run the classifier against the `data_test.pkl` file from Kaggle that can beat all three baselines (Random, Bayes and Bayes with smoothing), 
-please run the python file called `bayes_classifier_with_smoothing.py` located in the root directory of this project:
+The code for the models in the report is all included. To run the best classifier against the `data_test.pkl` file from Kaggle that produces the best accuracy, 
+please run the python file called `mnb_cnb_sgd.py` located in the root directory of this project:
 ```
-python bayes_classifier_with_smoothing.py
+python mnb_cnb_sgd.py
 ```
 After completion, the generated file will be called `output.csv` and will be located in the resources folder. 
 
 Note: Python 3 is required to run this project
 
-### Used Libraries ###
+### Required Libraries to run  ###
 
+- Scikit-learn
 - Numpy
 - NLTK
 

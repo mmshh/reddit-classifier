@@ -22,6 +22,12 @@ nltk.download('stopwords')
 
 
 def unique_comments(comment, result):
+    """
+    Get the unique comments
+    :param comment:
+    :param result:
+    :return:
+    """
     classes_name, classes_count = np.unique(comment, return_index=True)
     tag = []
     
@@ -32,6 +38,11 @@ def unique_comments(comment, result):
 
 
 def classes_to_integer(tag):
+    """
+    Converts the classes to a numbered set of integers
+    :param tag:
+    :return:
+    """
     lab = []
     classes_name = np.unique(tag)
     for i in range(len(tag)):
@@ -53,7 +64,11 @@ def get_datas():
     return comment_unique, result_unique_integer, test_data, classes_name
 
 
-def get_data_for_testing():   
+def get_data_for_testing():
+    """
+    preprocess and return the split dataset for validation
+    :return:
+    """
     comment_unique, result_unique_integer, test_data, classes_name = get_datas()
     
     X_train, X_test, y_train, y_test = train_test_split(
@@ -63,6 +78,14 @@ def get_data_for_testing():
 
 
 def train_predict_multNB(X_train, y_train, X_test, a):
+    """
+    Train and predict using Multinomial naive bayes classifier
+    :param X_train:
+    :param y_train:
+    :param X_test:
+    :param a:
+    :return:
+    """
     text_clf = Pipeline([
          ('vect', CountVectorizer()),
          ('tfidf', TfidfTransformer()),
@@ -77,6 +100,14 @@ def train_predict_multNB(X_train, y_train, X_test, a):
 
 
 def train_predict_compNB(X_train, y_train, X_test, a):
+    """
+    Train and predict using complement naive bayes classifier
+    :param X_train:
+    :param y_train:
+    :param X_test:
+    :param a:
+    :return:
+    """
     text_clf2 = Pipeline([
          ('vect', CountVectorizer()),
          ('tfidf', TfidfTransformer()),
@@ -91,6 +122,14 @@ def train_predict_compNB(X_train, y_train, X_test, a):
 
 
 def train_predict_sgd(x_t, y_t, x_test, a):
+    """
+    Train and predict using SGD classifier
+    :param x_t:
+    :param y_t:
+    :param x_test:
+    :param a:
+    :return:
+    """
     sgd = Pipeline([('vect', CountVectorizer()),
                     ('tfidf', TfidfTransformer()),
                     ('clf', SGDClassifier(loss='log', penalty='elasticnet',alpha=a, random_state=42,
@@ -104,6 +143,12 @@ def train_predict_sgd(x_t, y_t, x_test, a):
 
 
 def score_c(predictions, result):
+    """
+    Calculates accuracy
+    :param predictions:
+    :param result:
+    :return:
+    """
     count = 0
     for i in range(len(predictions)):
         if(predictions[i] == result[i]):
@@ -112,6 +157,10 @@ def score_c(predictions, result):
 
 
 def get_score_testing():
+    """
+    Run the predictions and validate score based on split dataset
+    :return: accuracy scores
+    """
     X_train, X_test, y_train, y_test, classes_name = get_data_for_testing()
     pred1 = train_predict_multNB(X_train, y_train, X_test, 0.15)
     pred2 = train_predict_compNB(X_train, y_train, X_test, 0.24)
@@ -127,12 +176,14 @@ def get_score_testing():
     for i in range(len(y_test)):
         y.append(classes_name[y_test[i]])
     
-    return y, p
     return score_c(y, p)
 
 
-
 def write_predictions():
+    """
+    Calls the predict methods and makes predictions based the a weighted average
+    :return: void, produces file
+    """
     X_train, y_train, X_test, classes_name = get_datas()
     pred1 = train_predict_multNB(X_train, y_train, X_test, 0.15)
     pred2 = train_predict_compNB(X_train, y_train, X_test, 0.24)
